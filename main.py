@@ -1,31 +1,23 @@
-import copy
+def encontrar_coordenadas_iniciais(identificador: str, tabuleiro: list[list[str]]) -> tuple[int, int]:
+    num_linhas = len(tabuleiro)
+    num_coluas = len(tabuleiro[0])
 
-class Node:
-    indice: int = 0
-    distancia_percorrida: float = 0
-    funcao_heuristica: float = 0
-    caminho: list[tuple] = []
+    for i in range(num_linhas):
+        for j in range(num_coluas):
+            if tabuleiro[i][j] == identificador:
+                return (i, j)
 
+def movimento_valido(coordenadas, tabuleiro):
+    num_linhas = len(tabuleiro)
+    num_coluas = len(tabuleiro[0])
 
-def funcao_heuristica(distancia_percorrida: float, distancia_linha_reta: float) -> float:
-    return distancia_linha_reta + distancia_percorrida
+    x, y = coordenadas
 
-def get_min(lista_filhos: list[Node]):
+    if x >= 0 and y >= 0 and x < num_linhas -1 and y < num_coluas -1:
+        return True
+    return False
 
-    if len(lista_filhos) == 0:
-        return None
-
-    melhor_filho: Node = lista_filhos[0]
-    indice_menor = 0
-    for filho, index in lista_filhos[1:]:
-        if filho.funcao_heuristica < melhor_filho.funcao_heuristica:
-            melhor_filho = filho
-            indice_menor = index
-    del lista_filhos[indice_menor]
-    return melhor_filho
-
-
-tab = [
+tab: list[list[str]] = [
     ["C", "_", "_", "_", "B", "_"],
     ["_", "B", "_", "_", "_", "_"],
     ["_", "_", "F", "_", "_", "_"],
@@ -34,39 +26,38 @@ tab = [
     ["_", "_", "_", "_", "_", "S"],
 ]
 
-pai = Node()
-pai.indice = 0
-pai.distancia_percorrida = 0
-lista_filhos = []
-final = Node()
+#Calcular a funcao heuristica ao redor
 
-personagem = "C"
-chegada = "S"
+movimentos: dict[str, tuple[int, int]] = {
+    "cima": (0, 1),
+    "baixo": (0, -1),
+    "esquerda": (-1, 0),
+    "direita": (1, 0),
+    "diagonal_inferior_direita": (1, -1),
+    "diagonal_inferior_esquerda": (-1, -1),
+    "diagonal_superior_direita": (1, 1),
+    "diagonal_superior_esquerda": (-1, 1)
+}
 
-while True:
-    for j in range(len(tab[0])):
-        if tab[pai.indice][j] != 0:
-            filho = Node()
-            filho.indice = j
-            filho.distancia_percorrida = pai.distancia_percorrida + tab[pai.indice][j]
-            filho.fe = funcao_heuristica(
-                dist, pai.distancia_percorrida, tab[pai.indice][j], j
-            )
-            filho.caminho = copy.deepcopy(pai.caminho)
-            filho.caminho.append(pai.indice)
-            estados.append(filho)
-            print("adicionou:", filho.indice, " fe:", filho.fe, " do pai: ", pai.indice)
+coordenadas_personagem: tuple[int, int] = encontrar_coordenadas_iniciais(identificador="C", tabuleiro=tab)
 
-    # depois do loop na matriz
-    pai = get_min(estados)
-    if pai == None:
-        print("Melhor final selecionado:", final.indice)
-        print("distancia", final.distancia_percorrida)
-        print("caminho", final.caminho)
-        break
-    print("Melhor filho selecionado:", pai.indice, " fe:", pai.fe)
-    print("caminho", pai.distancia_percorrida)
-    if pai.indice == len(tab) - 1 and (
-        final.fe == -1 or pai.fe < final.fe
-    ):  # CONDIÇÂO DE PARADA DEVE SER LISTA VAZIA!
-        final = pai
+lista_caminhos = []
+
+class Caminho:
+    def __init__(self, funcao_heuristica, coordenada):
+        self.funcao_heuristica = funcao_heuristica
+        self.coordenada = coordenada
+
+    def __repr__(self):
+        return f"Caminho (funcao_heuristica={self.funcao_heuristica}, coordenada={self.coordenada})"
+
+for key in movimentos.keys():
+    movimento_x, movimento_y = movimentos[key]
+    x_atual, y_atual = coordenadas_personagem
+
+    nova_coordenada = (movimento_x + x_atual, movimento_y + y_atual)
+    if movimento_valido(nova_coordenada, tab):
+        novo_caminho = Caminho(0, nova_coordenada)
+        lista_caminhos.append(novo_caminho)
+
+print(lista_caminhos)

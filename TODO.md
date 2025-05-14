@@ -1,0 +1,1 @@
+if pai.index == chegada
