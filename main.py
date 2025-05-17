@@ -14,6 +14,7 @@ class Caminho:
     def __repr__(self):
         return f"Caminho (funcao_heuristica={self.funcao_heuristica}, caminho={self.caminho_percorrido}, distancia_percorrida={self.distancia_percorrida})"
 
+fruta_coletada = False
 
 def encontrar_coordenadas(
     identificador_personagem: str,
@@ -47,15 +48,24 @@ def cacular_funcao_heuristica(
     return hipotenusa + distancia_percorrida
 
 
-def movimento_valido(coordenadas, tabuleiro):
+def movimento_valido(coordenadas, tabuleiro, fruta_coletada):
     num_linhas = len(tabuleiro)
     num_coluas = len(tabuleiro[0])
 
     x, y = coordenadas
 
-    if x >= 0 and y >= 0 and x <= num_linhas - 1 and y <= num_coluas - 1:
+    if x < 0 or y < 0 or x >= num_linhas or y >= num_coluas:
+        return False
+
+    caminho_atual = tabuleiro[x][y]
+
+    if caminho_atual == "F":
+        fruta_coletada = True
         return True
-    return False
+
+    if caminho_atual == "B" and not fruta_coletada:
+        return False
+    return True
 
 
 def retorna_menor_caminho(lista_caminhos) -> Caminho:
@@ -79,8 +89,6 @@ tab: list[list[str]] = [
     ["_", "_", "_", "A", "_", "_"],
     ["_", "_", "_", "_", "_", "S"],
 ]
-
-# Calcular a funcao heuristica ao redor
 
 movimentos: dict[str, tuple[int, int]] = {
     "cima": (0, -1),
@@ -110,7 +118,7 @@ while True:
         x_atual, y_atual = coordenadas_personagem
 
         nova_coordenada = (movimento_x + x_atual, movimento_y + y_atual)
-        if movimento_valido(nova_coordenada, tab):
+        if movimento_valido(nova_coordenada, tab, fruta_coletada):
             distancia = key in [
                 "diagonal_inferior_direita",
                 "diagonal_inferior_esquerda",
@@ -118,9 +126,14 @@ while True:
                 "diagonal_superior_esquerda",
             ]
 
-            distancia_percorrida = (
-                distancia_diagonal[distancia] + menor_caminho.distancia_percorrida
-            )
+            if tab[nova_coordenada[0]][nova_coordenada[1]] == "A":
+                distancia_percorrida = (
+                    distancia_diagonal[distancia] + menor_caminho.distancia_percorrida + 1
+                )
+            else:
+                distancia_percorrida = (
+                    distancia_diagonal[distancia] + menor_caminho.distancia_percorrida + 1
+                )
 
             funcao_heuristica = cacular_funcao_heuristica(
                 coordenadas_chegada=coordenadas_chegada,
