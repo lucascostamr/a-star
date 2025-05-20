@@ -112,9 +112,6 @@ lista_caminhos = []
 
 menor_caminho = Caminho(0, None, [], 0)
 
-coord_chegada = (5, 5)
-coordenada_anterior = None
-
 while True:
     for key in movimentos.keys():
         movimento_x, movimento_y = movimentos[key]
