@@ -1,6 +1,6 @@
 import tkinter as tk
 import time
-from main import menor_caminho, tab as cenario  # ta importando o back trazendo  o objeto final
+
 
 TAMANHO = 60
 VELOCIDADE = 5
@@ -11,7 +11,7 @@ unicodes = {
     'F': '⛽',
     'A': '🌀',
     'S': '🎌',
-    'C': '',  # como o carrinho  move nao tem icone entao nao e fixo
+    'C': '',
 }
 
 cores = {
@@ -23,7 +23,7 @@ cores = {
     'C': "white",
 }
 
-FINAL_COR = "#4caf50"     # verde para o caminho final
+FINAL_COR = "#4caf50"
 
 class TabuleiroApp:
     def __init__(self, matriz, caminho):
@@ -111,9 +111,3 @@ class TabuleiroApp:
             px, py = x * TAMANHO + TAMANHO // 2, y * TAMANHO + TAMANHO // 2
             rastro = self.canvas.create_text(px, py, text="🟢", font=("Arial", 14))
             self.canvas.tag_lower(rastro)
-
-if __name__ == "__main__":
-    if menor_caminho:
-        TabuleiroApp(cenario, menor_caminho.caminho_percorrido)
-    else:
-        print("Caminho não encontrado.")

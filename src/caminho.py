@@ -1,6 +1,6 @@
 class Caminho:
     def __init__(
-        self, funcao_heuristica = None, coordenada = None, caminho_percorrido = None, distancia_percorrida = None
+        self, caminho_percorrido, funcao_heuristica = 0, coordenada = None, distancia_percorrida = 0
     ):
         self.caminho_percorrido = caminho_percorrido
         self.coordenada = coordenada
