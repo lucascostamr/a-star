@@ -8,7 +8,7 @@ VELOCIDADE = 5
 unicodes = {
     '_': '',
     'B': '🧱',
-    'F': '🧃',
+    'F': '⛽',
     'A': '🌀',
     'S': '🎌',
     'C': '',  # como o carrinho  move nao tem icone entao nao e fixo
@@ -72,7 +72,7 @@ class TabuleiroApp:
         legenda = tk.Frame(frame)
         legenda.pack(side=tk.RIGHT, padx=10)
 
-        itens = [
+        items = [
             ('🚗', "Carrinho (início)"),
             ('🧱', "Barreira"),
             ('🧃', "Gasolina: permite passar barreira"),
@@ -81,7 +81,7 @@ class TabuleiroApp:
             ('🔵', "Caminho percorrido"),
         ]
 
-        for icon, desc in itens:
+        for icon, desc in items:
             linha = tk.Frame(legenda)
             linha.pack(anchor="w")
             tk.Label(linha, text=icon, font=("Arial", 16)).pack(side=tk.LEFT)

@@ -15,10 +15,14 @@ class Caminho:
         return f"Caminho (funcao_heuristica={self.funcao_heuristica}, caminho={self.caminho_percorrido}, distancia_percorrida={self.distancia_percorrida})"
 
 fruta_coletada = False
+caminhos_visitados = []
+lista_caminhos = []
+menor_caminho = Caminho(0, None, [], 0)
 
 def encontrar_coordenadas(
     identificador_personagem: str,
     identificador_chegada: str,
+    identificador_fruta: str,
     tabuleiro: list[list[str]],
 ) -> tuple[int, int]:
     num_linhas = len(tabuleiro)
@@ -26,6 +30,7 @@ def encontrar_coordenadas(
 
     coordenada_personagem = None
     coordenada_chegada = None
+    coordenada_fruta = None
 
     for i in range(num_linhas):
         for j in range(num_coluas):
@@ -33,8 +38,10 @@ def encontrar_coordenadas(
                 coordenada_personagem = (j, i)
             if tabuleiro[i][j] == identificador_chegada:
                 coordenada_chegada = (j, i)
+            if tabuleiro[i][j] == identificador_fruta:
+                coordenada_fruta = (j, i)
 
-    return (coordenada_personagem, coordenada_chegada)
+    return (coordenada_personagem, coordenada_chegada, coordenada_fruta)
 
 
 def cacular_funcao_heuristica(
@@ -57,6 +64,9 @@ def movimento_valido(coordenadas, tabuleiro, fruta_coletada):
     if x < 0 or y < 0 or x >= num_linhas or y >= num_coluas:
         return False
 
+    if coordenadas in caminhos_visitados:
+        return False
+
     caminho_atual = tabuleiro[x][y]
 
     if caminho_atual == "F":
@@ -72,12 +82,15 @@ def retorna_menor_caminho(lista_caminhos) -> Caminho:
     if not lista_caminhos:
         return None
 
-    menor_caminho = lista_caminhos[0]
-    for caminho in lista_caminhos[1:]:
+    menor_caminho = lista_caminhos.pop(0)
+    menor_caminho_index = None
+    for index, caminho in enumerate(lista_caminhos):
         if caminho.funcao_heuristica < menor_caminho.funcao_heuristica:
             menor_caminho = caminho
+            menor_caminho_index = index
 
-    lista_caminhos.clear()
+    if menor_caminho_index:
+        lista_caminhos.pop(menor_caminho_index)
     return menor_caminho
 
 
@@ -103,14 +116,9 @@ movimentos: dict[str, tuple[int, int]] = {
 
 distancia_diagonal = {False: 1, True: 1.4}
 
-coordenadas_personagem, coordenadas_chegada = encontrar_coordenadas(
-    identificador_personagem="C", identificador_chegada="S", tabuleiro=tab
+coordenadas_personagem, coordenadas_chegada, coordenada_fruta = encontrar_coordenadas(
+    identificador_personagem="C", identificador_chegada="S", identificador_fruta="F", tabuleiro=tab
 )
-
-lista_caminhos = []
-
-
-menor_caminho = Caminho(0, None, [], 0)
 
 while True:
     for key in movimentos.keys():
@@ -119,12 +127,7 @@ while True:
 
         nova_coordenada = (movimento_x + x_atual, movimento_y + y_atual)
         if movimento_valido(nova_coordenada, tab, fruta_coletada):
-            distancia = key in [
-                "diagonal_inferior_direita",
-                "diagonal_inferior_esquerda",
-                "diagonal_superior_direita",
-                "diagonal_superior_esquerda",
-            ]
+            distancia = key.startswith("diagonal")
 
             if tab[nova_coordenada[0]][nova_coordenada[1]] == "A":
                 distancia_percorrida = (
@@ -132,7 +135,7 @@ while True:
                 )
             else:
                 distancia_percorrida = (
-                    distancia_diagonal[distancia] + menor_caminho.distancia_percorrida + 1
+                    distancia_diagonal[distancia] + menor_caminho.distancia_percorrida
                 )
 
             funcao_heuristica = cacular_funcao_heuristica(
@@ -153,8 +156,10 @@ while True:
 
     pprint(lista_caminhos)
     menor_caminho: Caminho = retorna_menor_caminho(lista_caminhos)
-    if menor_caminho.coordenada == coordenadas_chegada:
-        break
+    caminhos_visitados = menor_caminho.caminho_percorrido
     coordenadas_personagem = menor_caminho.coordenada
+
+    if menor_caminho.coordenada == coordenadas_chegada or lista_caminhos is None:
+        break
 
 print(menor_caminho)
