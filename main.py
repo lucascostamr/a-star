@@ -1,21 +1,10 @@
 from math import hypot
 from pprint import pprint
 
-
-class Caminho:
-    def __init__(
-        self, funcao_heuristica, coordenada, caminho_percorrido, distancia_percorrida
-    ):
-        self.caminho_percorrido = caminho_percorrido
-        self.coordenada = coordenada
-        self.funcao_heuristica = funcao_heuristica
-        self.distancia_percorrida = distancia_percorrida
-
-    def __repr__(self):
-        return f"Caminho (funcao_heuristica={self.funcao_heuristica}, caminho={self.caminho_percorrido}, distancia_percorrida={self.distancia_percorrida})"
+from caminho import Caminho
 
 fruta_coletada = False
-caminhos_visitados = []
+caminhos_visitados = {}
 lista_caminhos = []
 menor_caminho = Caminho(0, None, [], 0)
 
@@ -154,12 +143,13 @@ while True:
             )
             lista_caminhos.append(novo_caminho)
 
+            caminhos_visitados = set((*caminhos_visitados, nova_coordenada))
+
     pprint(lista_caminhos)
     menor_caminho: Caminho = retorna_menor_caminho(lista_caminhos)
-    caminhos_visitados = menor_caminho.caminho_percorrido
     coordenadas_personagem = menor_caminho.coordenada
 
     if menor_caminho.coordenada == coordenadas_chegada or lista_caminhos is None:
         break
 
-print(menor_caminho)
+print(f"\n\nMenor Caminho: {menor_caminho}")
