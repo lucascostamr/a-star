@@ -7,10 +7,10 @@ VELOCIDADE = 5
 
 unicodes = {
     '_': '',
-    'B': '🧱',
+    'B': '█',
     'F': '⛽',
-    'A': '🌀',
-    'S': '🎌',
+    'A': '…',
+    'S': '🏁',
     'C': '',
 }
 
@@ -26,9 +26,10 @@ cores = {
 FINAL_COR = "#4caf50"
 
 class TabuleiroApp:
-    def __init__(self, matriz, caminho):
+    def __init__(self, matriz, caminhos_visitados, menor_caminho):
         self.matriz = matriz
-        self.caminho = caminho
+        self.menor_caminho = menor_caminho
+        self.caminhos_visitados = caminhos_visitados
         self.linhas = len(matriz)
         self.colunas = len(matriz[0])
 
@@ -44,7 +45,7 @@ class TabuleiroApp:
         self.cells = {}
         self.desenha_tabuleiro()
 
-        linha_ini, col_ini = self.caminho[0][1], self.caminho[0][0]
+        linha_ini, col_ini = self.menor_caminho[0][1], self.menor_caminho[0][0]
         self.personagem = self.canvas.create_text(
             col_ini * TAMANHO + TAMANHO // 2,
             linha_ini * TAMANHO + TAMANHO // 2,
@@ -72,10 +73,10 @@ class TabuleiroApp:
 
         items = [
             ('🚗', "Carrinho (início)"),
-            ('🧱', "Barreira"),
-            ('🧃', "Gasolina: permite passar barreira"),
-            ('🌀', "Especial (sem efeito)"),
-            ('🎌', "Chegada"),
+            ('█', "Barreira"),
+            ('⛽', "Gasolina: permite passar barreira"),
+            ('…', "Especial (sem efeito)"),
+            ('🏁', "Chegada"),
             ('🟢', "Caminho final"),
         ]
 
@@ -86,13 +87,23 @@ class TabuleiroApp:
             tk.Label(linha, text=" - " + desc, font=("Arial", 12)).pack(side=tk.LEFT)
 
     def animar_caminho_final(self):
-        for idx in range(len(self.caminho)):
-            x, y = self.caminho[idx]
+        for idx in range(len(self.caminhos_visitados)):
+            x, y = self.caminhos_visitados[idx]
+            rect, _ = self.cells[(y, x)]
+            self.canvas.itemconfig(rect, fill='gray')
+            self.root.update()
+            time.sleep(0.15)
+            px, py = x * TAMANHO + TAMANHO // 2, y * TAMANHO + TAMANHO // 2
+            rastro = self.canvas.create_text(px, py, text="🟢", font=("Arial", 14))
+            self.canvas.tag_lower(rastro)
+
+        for idx in range(len(self.menor_caminho)):
+            x, y = self.menor_caminho[idx]
             rect, _ = self.cells[(y, x)]
             self.canvas.itemconfig(rect, fill=FINAL_COR)
             # move o carrinho
             if idx > 0:
-                x1, y1 = self.caminho[idx-1]
+                x1, y1 = self.menor_caminho[idx-1]
                 linha1, col1 = y1, x1
                 linha2, col2 = y, x
                 px1 = col1 * TAMANHO + TAMANHO // 2
@@ -107,7 +118,6 @@ class TabuleiroApp:
                     time.sleep(0.08)
             self.root.update()
             time.sleep(0.15)
-            # raastro do caminho final verde
             px, py = x * TAMANHO + TAMANHO // 2, y * TAMANHO + TAMANHO // 2
             rastro = self.canvas.create_text(px, py, text="🟢", font=("Arial", 14))
             self.canvas.tag_lower(rastro)

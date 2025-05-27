@@ -160,3 +160,6 @@ class AStar:
         if menor_caminho_index:
             lista_caminhos.pop(menor_caminho_index)
         return menor_caminho
+
+    def retornar_caminhos_visitados(self):
+        return sorted(list(self.caminhos_visitados))

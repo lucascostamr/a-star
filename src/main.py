@@ -11,8 +11,9 @@ def main():
         ["_", "_", "_", "_", "_", "S"],
     ]
 
-    a_star_alogrithm = AStar(debug=True)
+    a_star_alogrithm = AStar(debug=False)
     menor_caminho = a_star_alogrithm.start(tab)
+    caminhos_visitados = a_star_alogrithm.retornar_caminhos_visitados()
 
     if not menor_caminho:
         print("Nenhum caminho encontrado")
@@ -20,7 +21,7 @@ def main():
 
     print(f"\nMenor Caminho: {menor_caminho}")
 
-    TabuleiroApp(tab, menor_caminho.caminho_percorrido)
+    TabuleiroApp(tab, caminhos_visitados, menor_caminho.caminho_percorrido)
 
 if __name__ == "__main__":
     main()
