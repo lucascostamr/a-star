@@ -7,9 +7,9 @@ VELOCIDADE = 10
 
 unicodes = {
     '_': '',
-    'B': '█',
+    'B': '🧱',
     'F': '⛽',
-    'A': '…',
+    'A': '🌀',
     'S': '🏁',
     'C': '',
 }
@@ -73,10 +73,14 @@ class TabuleiroApp:
 
         items = [
             ('🚗', "Carrinho (início)"),
-            ('█', "Barreira"),
+            ('🧱', "Barreira"),
             ('⛽', "Gasolina: permite passar barreira"),
-            ('…', "Especial (Custa 2)"),
+            ('🌀', "Especial (Custa 2)"),
             ('🏁', "Chegada"),
+            ('', ""),
+            ('', ""),
+            ('', ""),
+            ('😎', "Made by: Filipe B. & Lucas M."),
         ]
 
         for icon, desc in items:
@@ -86,17 +90,24 @@ class TabuleiroApp:
             tk.Label(linha, text=" - " + desc, font=("Arial", 12)).pack(side=tk.LEFT)
 
     def animar_caminho_final(self):
-        for idx in range(len(self.caminhos_visitados)):
-            x, y = self.caminhos_visitados[idx]
+        for caminho in self.caminhos_visitados:
+
+            informacoes_caminho = f"fe: {caminho.funcao_heuristica:.2f}\ndp: {caminho.distancia_percorrida:.2f}"
+
+            x, y = caminho.coordenada
             rect, _ = self.cells[(y, x)]
             self.canvas.itemconfig(rect, fill='black')
             self.root.update()
             time.sleep(0.5)
             self.canvas.itemconfig(rect, fill='gray')
+            # Adiciona texto pequeno no canto inferior direito
+            px = x * TAMANHO + TAMANHO - 8
+            py = y * TAMANHO + TAMANHO - 8
+            self.canvas.create_text(px, py, text=informacoes_caminho, anchor="se", font=("Arial", 8), fill="black")
             self.root.update()
             time.sleep(0.5)
-            px, py = x * TAMANHO + TAMANHO // 2, y * TAMANHO + TAMANHO // 2
-            rastro = self.canvas.create_text(px, py, text="🟢", font=("Arial", 14))
+            px_center, py_center = x * TAMANHO + TAMANHO // 2, y * TAMANHO + TAMANHO // 2
+            rastro = self.canvas.create_text(px_center, py_center, text="🟢", font=("Arial", 14))
             self.canvas.tag_lower(rastro)
 
         for idx in range(len(self.menor_caminho)):

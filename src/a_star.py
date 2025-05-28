@@ -26,17 +26,21 @@ class AStar:
 
         distancia_diagonal = {False: 1, True: 1.4}
 
-        coordenadas_personagem, coordenadas_chegada, coordenada_fruta = (
+        coordenadas_personagem, coordenadas_chegada = (
             self.encontrar_coordenadas(
                 identificador_personagem="C",
                 identificador_chegada="S",
-                identificador_fruta="F",
                 tabuleiro=tabuleiro,
             )
         )
 
         self.menor_caminho.caminho_percorrido.append(coordenadas_personagem)
-        self.caminhos_visitados.append(coordenadas_personagem)
+        fe_personagem = self.cacular_funcao_heuristica(
+            coordenadas_personagem=coordenadas_personagem,
+            coordenadas_chegada=coordenadas_chegada,
+            distancia_percorrida=0,
+        )
+        self.caminhos_visitados.append(Caminho([],fe_personagem,coordenadas_personagem,0))
 
         while True:
             for key in movimentos.keys():
@@ -79,7 +83,7 @@ class AStar:
                     self.lista_caminhos.append(novo_caminho)
 
                     if nova_coordenada not in self.caminhos_visitados:
-                        self.caminhos_visitados.append(nova_coordenada)
+                        self.caminhos_visitados.append(novo_caminho)
 
                     if nova_coordenada == coordenadas_chegada:
                         break
@@ -98,7 +102,6 @@ class AStar:
         self,
         identificador_personagem: str,
         identificador_chegada: str,
-        identificador_fruta: str,
         tabuleiro: list[list[str]],
     ) -> tuple[int, int]:
         num_linhas = len(tabuleiro)
@@ -106,7 +109,6 @@ class AStar:
 
         coordenada_personagem = None
         coordenada_chegada = None
-        coordenada_fruta = None
 
         for i in range(num_linhas):
             for j in range(num_coluas):
@@ -114,10 +116,8 @@ class AStar:
                     coordenada_personagem = (j, i)
                 if tabuleiro[i][j] == identificador_chegada:
                     coordenada_chegada = (j, i)
-                if tabuleiro[i][j] == identificador_fruta:
-                    coordenada_fruta = (j, i)
 
-        return (coordenada_personagem, coordenada_chegada, coordenada_fruta)
+        return (coordenada_personagem, coordenada_chegada)
 
     def cacular_funcao_heuristica(
         self, coordenadas_personagem, coordenadas_chegada, distancia_percorrida
@@ -139,7 +139,7 @@ class AStar:
         if x < 0 or y < 0 or x >= num_linhas or y >= num_coluas:
             return False
 
-        if coordenadas in self.caminhos_visitados:
+        if next((True for caminho in self.caminhos_visitados if caminho.coordenada == coordenadas), False):
             return False
 
         caminho_atual = tabuleiro[x][y]

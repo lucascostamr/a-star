@@ -11,7 +11,7 @@ def main():
         ["_", "_", "_", "_", "_", "S"],
     ]
 
-    a_star_alogrithm = AStar(debug=False)
+    a_star_alogrithm = AStar(debug=True)
     menor_caminho = a_star_alogrithm.start(tab)
     caminhos_visitados = a_star_alogrithm.retornar_caminhos_visitados()
 
