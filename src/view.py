@@ -3,7 +3,7 @@ import time
 
 
 TAMANHO = 60
-VELOCIDADE = 5
+VELOCIDADE = 10
 
 unicodes = {
     '_': '',
@@ -75,9 +75,8 @@ class TabuleiroApp:
             ('🚗', "Carrinho (início)"),
             ('█', "Barreira"),
             ('⛽', "Gasolina: permite passar barreira"),
-            ('…', "Especial (sem efeito)"),
+            ('…', "Especial (Custa 2)"),
             ('🏁', "Chegada"),
-            ('🟢', "Caminho final"),
         ]
 
         for icon, desc in items:
@@ -90,9 +89,12 @@ class TabuleiroApp:
         for idx in range(len(self.caminhos_visitados)):
             x, y = self.caminhos_visitados[idx]
             rect, _ = self.cells[(y, x)]
+            self.canvas.itemconfig(rect, fill='black')
+            self.root.update()
+            time.sleep(0.5)
             self.canvas.itemconfig(rect, fill='gray')
             self.root.update()
-            time.sleep(0.15)
+            time.sleep(0.5)
             px, py = x * TAMANHO + TAMANHO // 2, y * TAMANHO + TAMANHO // 2
             rastro = self.canvas.create_text(px, py, text="🟢", font=("Arial", 14))
             self.canvas.tag_lower(rastro)

@@ -7,7 +7,7 @@ from caminho import Caminho
 class AStar:
     def __init__(self, debug = False):
         self.fruta_coletada = False
-        self.caminhos_visitados = {}
+        self.caminhos_visitados = []
         self.lista_caminhos = []
         self.menor_caminho = Caminho(caminho_percorrido=[])
         self.debug = debug
@@ -34,6 +34,9 @@ class AStar:
                 tabuleiro=tabuleiro,
             )
         )
+
+        self.menor_caminho.caminho_percorrido.append(coordenadas_personagem)
+        self.caminhos_visitados.append(coordenadas_personagem)
 
         while True:
             for key in movimentos.keys():
@@ -75,8 +78,11 @@ class AStar:
                     )
                     self.lista_caminhos.append(novo_caminho)
 
-                    self.caminhos_visitados = set(
-                        (*self.caminhos_visitados, nova_coordenada))
+                    if nova_coordenada not in self.caminhos_visitados:
+                        self.caminhos_visitados.append(nova_coordenada)
+
+                    if nova_coordenada == coordenadas_chegada:
+                        break
 
             if self.debug: 
                 pprint(self.lista_caminhos)
@@ -162,4 +168,4 @@ class AStar:
         return menor_caminho
 
     def retornar_caminhos_visitados(self):
-        return sorted(list(self.caminhos_visitados))
+        return self.caminhos_visitados
