@@ -6,7 +6,6 @@ from caminho import Caminho
 
 class AStar:
     def __init__(self, debug = False):
-        self.fruta_coletada = False
         self.caminhos_visitados = []
         self.lista_caminhos = []
         self.menor_caminho = Caminho(caminho_percorrido=[])
@@ -48,7 +47,9 @@ class AStar:
                 x_atual, y_atual = coordenadas_personagem
 
                 nova_coordenada = (movimento_x + x_atual, movimento_y + y_atual)
-                if self.movimento_valido(nova_coordenada, tabuleiro, self.fruta_coletada):
+                fruta_ate_agora = self.menor_caminho.fruta_coletada
+                fruta_apos_passo = fruta_ate_agora or tabuleiro[nova_coordenada[0]][nova_coordenada[1]] == "F"
+                if self.movimento_valido(nova_coordenada, tabuleiro, fruta_ate_agora):
                     distancia = key.startswith("diagonal")
 
                     if tabuleiro[nova_coordenada[0]][nova_coordenada[1]] == "A":
@@ -79,6 +80,7 @@ class AStar:
                         coordenada=nova_coordenada,
                         caminho_percorrido=caminho_percorrido,
                         distancia_percorrida=distancia_percorrida,
+                        fruta_coletada=fruta_apos_passo
                     )
                     self.lista_caminhos.append(novo_caminho)
                     if next((True for caminho in self.caminhos_visitados if caminho.coordenada != nova_coordenada), False):
@@ -142,10 +144,6 @@ class AStar:
             return False
 
         caminho_atual = tabuleiro[x][y]
-
-        if caminho_atual == "F":
-            fruta_coletada = True
-            return True
 
         if caminho_atual == "B" and not fruta_coletada:
             return False
