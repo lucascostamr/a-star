@@ -81,8 +81,7 @@ class AStar:
                         distancia_percorrida=distancia_percorrida,
                     )
                     self.lista_caminhos.append(novo_caminho)
-
-                    if nova_coordenada not in self.caminhos_visitados:
+                    if next((True for caminho in self.caminhos_visitados if caminho.coordenada != nova_coordenada), False):
                         self.caminhos_visitados.append(novo_caminho)
 
                     if nova_coordenada == coordenadas_chegada:
